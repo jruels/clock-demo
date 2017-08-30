@@ -1,0 +1,7 @@
+- name: Deploy Clock with Compose
+  hosts: tag_role_swarm_master
+  remote_user: ubuntu
+  gather_facts: yes
+  tasks:
+    - command: "cd compose"
+    - command: "docker stack deploy --compose-file docker-compose.yml js-clock"

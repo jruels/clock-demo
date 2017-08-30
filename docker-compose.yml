@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+
+  clock:
+    image: hub.halo.ninja:4997/clock
+    environment:
+      - MQ_PORT_5672_TCP_ADDR=rmq-test.halo.ninja
+    deploy:
+      replicas: 3
