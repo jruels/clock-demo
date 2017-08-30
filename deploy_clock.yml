@@ -3,5 +3,5 @@
   remote_user: ubuntu
   gather_facts: yes
   tasks:
-    - command: "cd compose"
-    - command: "docker stack deploy --compose-file docker-compose.yml js-clock"
+    - command: "docker stack deploy --compose-file /home/ubuntu/compose/docker-compose.yml js-clock"
+
