@@ -1,0 +1,6 @@
+- name: Destroy Clock Stack
+  hosts: tag_role_swarm_master
+  remote_user: ubuntu
+  gather_facts: yes
+  tasks:
+    - command: "docker stack rm js-clock"
