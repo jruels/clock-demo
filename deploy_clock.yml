@@ -13,4 +13,5 @@
         owner: "{{ ansible_ssh_user }}"
         group: "{{ ansible_ssh_user }}"
         mode: 0644
+      notify: restart docker
     - command: "docker stack deploy --compose-file compose/docker-compose.yml js-clock"
