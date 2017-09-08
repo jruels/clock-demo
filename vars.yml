@@ -2,3 +2,7 @@ DB: services
 SUFFIX: "halo.ninja"
 REGISTRY: "hub.halo.ninja:4997"
 DB_TABLE: services
+USERNAME: selector
+ENV: test
+REPLICAS: 3
+PUBLISH: "80:80"
