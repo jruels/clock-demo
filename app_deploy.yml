@@ -18,26 +18,33 @@
   tasks:
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select hostname from {{ DB_TABLE }} where id="{{ SID }}"'
       register: HOST
+    - set_fact: HOST="{{HOST.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select soft_upgrade from {{ DB_TABLE }} where id="{{ SID }}"'
       register: SOFTUPGRADE
+    - set_fact: SOFTUPGRADE="{{SOFTUPGRADE.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select should_run from {{ DB_TABLE }} where id="{{ SID }}"'
       register: VERSION
+    - set_fact: VERSION="{{VERSION.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select count from {{ DB_TABLE }} where id="{{ SID }}"'
       register: COUNT
+    - set_fact: COUNT="{{COUNT.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select param from {{ DB_TABLE }} where id="{{ SID }}"'
       register: PARAM
+    - set_fact: PARAM="{{PARAM.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select command from {{ DB_TABLE }} where id="{{ SID }}"'
       register: COMMAND
+    - set_fact: COMMAND="{{COMMAND.stdout}}"
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select arguments from {{ DB_TABLE }} where id="{{ SID }}"'
       register: ARGUMENTS
-#    - debug:
-#        msg: Variables are "{{ item }}"
-#      with_items:
+    - set_fact: ARGUMENTS="{{ARGUMENTS.stdout}}"
+    - debug:
+        msg: Variables are "{{ item }}"
+      with_items:
 #        - "{{ HOST.stdout }}"
 #        - "{{ SOFTUPGRADE.stdout}}"
 #        - "{{ VERSION.stdout }}"
 #        - "{{ COUNT.stdout }}"
-#        - "{{ PARAM.stdout }}"
+        - "{{ PARAM.stdout }}"
 #        - "{{ COMMAND.stdout }}"
 #        - "{{ ARGUMENTS.stdout }}"
 
@@ -69,6 +76,6 @@
 #  gather_facts: yes
 #  tasks:
   - name: Create Swarm Service for {{ APP_NAME }}
-    command: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ PARAM.stdout }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
-#    debug:
-#      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} --publish {{ PUBLISH }}"
+#    command: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ PARAM.stdout }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
+    debug:
+      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ VERSION }} {{ COMMAND }} {{ ARGUMENTS }}"
