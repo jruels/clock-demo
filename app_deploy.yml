@@ -37,9 +37,9 @@
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select arguments from {{ DB_TABLE }} where id="{{ SID }}"'
       register: ARGUMENTS
     - set_fact: ARGUMENTS="{{ARGUMENTS.stdout}}"
-    - debug:
-        msg: Variables are "{{ item }}"
-      with_items:
+#    - debug:
+#        msg: Variables are "{{ item }}"
+#      with_items:
 #        - "{{ HOST.stdout }}"
 #        - "{{ SOFTUPGRADE.stdout}}"
 #        - "{{ VERSION.stdout }}"
