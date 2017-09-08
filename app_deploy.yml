@@ -78,4 +78,4 @@
   - name: Create Swarm Service for {{ APP_NAME }}
 #    command: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ PARAM.stdout }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
     debug:
-      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ VERSION }} {{ COMMAND }} {{ ARGUMENTS }}"
+      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
