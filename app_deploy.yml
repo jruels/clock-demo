@@ -1,0 +1,73 @@
+- hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yml
+  gather_facts: yes
+  tasks:
+  - name: Get SID
+    command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select id from {{ DB_TABLE }} where env="{{ ENV }}" and service="{{ APP_NAME }}"'
+    register: SERVICE_ID
+  - set_fact: SID="{{SERVICE_ID.stdout}}"
+
+- name: Register a bunch of variables
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yml
+  gather_facts: yes
+  tasks:
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select hostname from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: HOST
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select soft_upgrade from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: SOFTUPGRADE
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select should_run from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: VERSION
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select count from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: COUNT
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select param from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: PARAM
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select command from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: COMMAND
+    - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select arguments from {{ DB_TABLE }} where id="{{ SID }}"'
+      register: ARGUMENTS
+    - debug:
+        msg: Variables are "{{ item }}"
+      with_items:
+        - "{{ HOST.stdout }}"
+        - "{{ SOFTUPGRADE.stdout}}"
+        - "{{ VERSION.stdout }}"
+        - "{{ COUNT.stdout }}"
+        - "{{ PARAM.stdout }}"
+        - "{{ COMMAND.stdout }}"
+        - "{{ ARGUMENTS.stdout }}"
+
+- hosts: tag_role_swarm_master
+  vars_files:
+    - vars.yml
+  gather_facts: no
+  tasks:
+  - name: Get container ID
+    command: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 ps -aqf name={{ APP_NAME }}"
+    register: container_id
+  - set_fact: CID="{{container_id.stdout}}"
+
+  - name: Remove container
+#    command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select count(hostname) from {{ DB_TABLE }} where env="{{ ENV }}" and id="{{ SID }}"'
+#   command: "docker rm -f {{ CID }}"
+    debug:
+      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 rm -f {{ CID }}"
+
+  - name: Create container
+#    command: "docker run {{ PARAM }} --restart=no --log-driver=syslog --name {{ APP_NAME }}-js -dit hub.halo.ninja:4997/{{ APP_NAME }}:{{ VERSION }} {{ COMMAND }} {{ ARGUMENTS }}"
+    debug:
+      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 run {{ PARAM.stdout }} --restart=no --log-driver=syslog --name {{ APP_NAME }}-js -dit hub.halo.ninja:4997/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
+
+#- hosts: tag_role_swarm_master
+#  vars_fileas:
+#  - vars.yml
+#  gather_facts: yes
+#  tasks:
+  - name: Create Swarm Service for {{ APP_NAME }}
+#    command: "docker swarm service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} --publish {{ PUBLISH }} "
+    debug:
+      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 swarm service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} --publish {{ PUBLISH }}"
