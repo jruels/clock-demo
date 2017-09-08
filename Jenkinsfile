@@ -8,8 +8,8 @@ node('master') {
 
     stage('deploy') {
      sshagent ([aws_creds_key]) {
-        sh "echo 'DEPLOYING CLOCK'"
-        sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -b -u ubuntu -i ./inventory deploy_clock.yml"
+        sh "echo 'DEPLOYING ${param.APP_NAME}'"
+       sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -b -u ubuntu -i ./inventory app_deploy.yml -e ${param.APP_NAME}"
        }
     }
   }
