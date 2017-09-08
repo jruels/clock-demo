@@ -44,7 +44,7 @@
 #        - "{{ SOFTUPGRADE.stdout}}"
 #        - "{{ VERSION.stdout }}"
 #        - "{{ COUNT.stdout }}"
-        - "{{ PARAM.stdout }}"
+#        - "{{ PARAM.stdout }}"
 #        - "{{ COMMAND.stdout }}"
 #        - "{{ ARGUMENTS.stdout }}"
 
