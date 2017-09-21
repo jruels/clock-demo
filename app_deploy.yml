@@ -76,6 +76,6 @@
 #  gather_facts: yes
 #  tasks:
   - name: Create Swarm Service for {{ APP_NAME }}
-    command: "docker service create --name {{ APP_NAME }} {{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
+    command: "docker service create --name {{ APP_NAME }}-{{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
 #    debug:
 #      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
