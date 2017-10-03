@@ -37,16 +37,6 @@
     - command: mysql -u {{ USERNAME }} {{ DB }} -Ns -e 'select arguments from {{ DB_TABLE }} where id="{{ SID }}"'
       register: ARGUMENTS
     - set_fact: ARGUMENTS="{{ARGUMENTS.stdout}}"
-#    - debug:
-#        msg: Variables are "{{ item }}"
-#      with_items:
-#        - "{{ HOST.stdout }}"
-#        - "{{ SOFTUPGRADE.stdout}}"
-#        - "{{ VERSION.stdout }}"
-#        - "{{ COUNT.stdout }}"
-#        - "{{ PARAM.stdout }}"
-#        - "{{ COMMAND.stdout }}"
-#        - "{{ ARGUMENTS.stdout }}"
 
 - hosts: tag_role_swarm_master
   vars_files:
@@ -54,7 +44,6 @@
   gather_facts: yes
   tasks:
   - name: Get container ID
-#    command: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 ps -aqf name={{ APP_NAME }}"
     command: "docker ps -aqf name={{ APP_NAME }}"
     register: container_id
   - set_fact: CID="{{container_id.stdout}}"
@@ -65,17 +54,43 @@
 #    debug:
 #      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 rm -f {{ CID }}"
 
-#  - name: Create container
-    #command: "docker run {{ PARAM.stdout }} --restart=no --log-driver=syslog --name {{ APP_NAME }} -dit hub.halo.ninja:4997/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
-#    debug:
-#      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 run {{ PARAM.stdout }} --restart=no --log-driver=syslog --name {{ APP_NAME }}-js -dit hub.halo.ninja:4997/{{ APP_NAME }}:{{ VERSION.stdout }} {{ COMMAND.stdout }} {{ ARGUMENTS.stdout }}"
-
-#- hosts: tag_role_swarm_master
-#  vars_fileas:
-#  - vars.yml
-#  gather_facts: yes
-#  tasks:
   - name: Create Swarm Service for {{ APP_NAME }}
     command: "docker service create --name {{ APP_NAME }}-{{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
-#    debug:
-#      msg: "docker service create --name {{ APP_NAME }}-js --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog --publish {{ PUBLISH }} -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
+
+- hosts: tag_role_swarm_master
+  vars_files:
+    - vars.yml
+  gather_facts: yes
+  tasks:
+  - name: Get new container ID
+    command: "docker ps -aqf name={{ APP_NAME }}-{{ BUILD_NUMBER }}"
+    register: container_id
+  - set_fact: CID="{{container_id.stdout}}"
+
+
+- hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yml
+  gather_facts: yes
+  roles: 
+    - mysql-query
+  tasks:
+    - name: Update deploy_times table
+      mysql_query: 
+        name: {{ DB }}
+        table: {{ DB_TABLE }}
+        login_host: localhost
+        login_user: {{ USERNAME }}
+        identifiers:
+          service: {{ APP_NAME }}-{{ BUILD_NUMBER }}
+        values: 
+          date: "{{ansible_date_time.date}}
+          time: "{{ansible_date_time.time}}"
+          env: "{{ ENV }}"
+          hostname: " {{ HOST }}"
+          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
+          version: "{{ VERSION }}" 
+          container_id: "{{ CID }}"
+          
+          
