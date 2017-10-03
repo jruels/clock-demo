@@ -88,7 +88,8 @@
         identifiers:
           service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
         values: 
-          date: '"{{hostvars[groups["tag_role_swarm_master"][0]].deployment_date.stdout}}"'
+#          date: '"{{hostvars[groups["tag_role_swarm_master"][0]].deployment_date.stdout}}"'
+          date: '2017-10-03'
           time: "{{ ansible_date_time.time }}"
           env: "{{ ENV }}"
           hostname: " {{ HOST }}"
