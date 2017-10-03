@@ -9,7 +9,7 @@ node('master') {
     stage('deploy') {
      sshagent ([aws_creds_key]) {
         sh "echo 'DEPLOYING ${APP_NAME}'"
-       sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i ./inventory app_deploy.yml -e APP_NAME=${APP_NAME} -e BUILD_NUMBER=${env.BUILD_NUMBER}"
+       sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -vvv -u ubuntu -i ./inventory app_deploy.yml -e APP_NAME=${APP_NAME} -e BUILD_NUMBER=${env.BUILD_NUMBER}"
        }
     }
   }
