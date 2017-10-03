@@ -78,14 +78,14 @@
   tasks:
     - name: Update deploy_times table
       mysql_query: 
-        name: {{ DB }}
-        table: {{ DB_TABLE }}
+        name: "{{ DB }}"
+        table: "{{ DB_TABLE }}"
         login_host: localhost
-        login_user: {{ USERNAME }}
+        login_user: "{{ USERNAME }}"
         identifiers:
-          service: {{ APP_NAME }}-{{ BUILD_NUMBER }}
+          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
         values: 
-          date: "{{ansible_date_time.date}}
+          date: "{{ansible_date_time.date}}"
           time: "{{ansible_date_time.time}}"
           env: "{{ ENV }}"
           hostname: " {{ HOST }}"
