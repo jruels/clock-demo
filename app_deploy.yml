@@ -85,7 +85,7 @@
         identifiers:
           service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
         values: 
-          date: "{{ansible_date_time.date}}"
+          date: '{{ansible_date_time.date}}'
           time: "{{ansible_date_time.time}}"
           env: "{{ ENV }}"
           hostname: " {{ HOST }}"
