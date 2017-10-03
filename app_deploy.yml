@@ -91,6 +91,6 @@
           hostname: " {{ HOST }}"
           service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
           version: "{{ VERSION }}" 
-          container_id: "{{hostvars[groups]['tag_role_swarm_master']['CID']}}"
+          container_id: "{{hostvars[groups['tag_role_swarm_master'][0]].CID}}"
           
           
