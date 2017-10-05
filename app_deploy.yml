@@ -57,8 +57,11 @@
   - name: Create Swarm Service for {{ APP_NAME }}
     command: "docker service create --name {{ APP_NAME }}-{{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
   - name: Register deployment date
-    shell: 'date -I'
+    shell: date -I
     register: deployment_date
+  - name: Register deployment time
+    shell: date +%H:%M:%S
+    register: deployment_time
 
 - hosts: tag_role_swarm_master
   vars_files:
@@ -76,25 +79,35 @@
   vars_files:
     - vars.yml
   gather_facts: yes
-  roles: 
-    - mysql-query
+
+#  roles: 
+#    - mysql-query
   tasks:
     - name: Update deploy_times table
-      mysql_query: 
-        name: "{{ DB }}"
-        table: "{{ DB_TABLE }}"
-        login_host: localhost
-        login_user: "{{ USERNAME }}"
-        identifiers:
-          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
-        values: 
+      shell: 
+        cmd: |
+          mysql -u "{{ USERNAME }}" "{{ DB }}" -sN
+                -e "INSERT INTO {{ DB_TABLE }} (date,time,env,hostname,service,version,container_id)
+                    VALUES ('{{ hostvars[groups["tag_role_swarm_master"][0]].deployment_date.stdout }}',
+                           '{{ hostvars[groups["tag_role_swarm_master"][0]].deployment_time.stdout }}', 
+                           '{{ ENV }}', '{{ HOST }}', '{{ APP_NAME }}-{{ BUILD_NUMBER }}', '{{ VERSION }}', 
+                           '{{ hostvars[groups['tag_role_swarm_master'][0]].CID}}')"
+                
+#      mysql_query: 
+#        name: "{{ DB }}"
+#        table: "{{ DB_TABLE }}"
+#        login_host: localhost
+#        login_user: "{{ USERNAME }}"
+#        identifiers:
+#          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
+#        values: 
 #          date: '"{{hostvars[groups["tag_role_swarm_master"][0]].deployment_date.stdout}}"'
-          date: '2017-10-03'
-          time: "{{ ansible_date_time.time }}"
-          env: "{{ ENV }}"
-          hostname: " {{ HOST }}"
-          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
-          version: "{{ VERSION }}" 
-          container_id: "{{hostvars[groups['tag_role_swarm_master'][0]].CID}}"
+#          date: '2017-10-03'
+#          time: "{{ ansible_date_time.time }}"
+#          env: "{{ ENV }}"
+#          hostname: " {{ HOST }}"
+#          service: "{{ APP_NAME }}-{{ BUILD_NUMBER }}"
+#          version: "{{ VERSION }}" 
+#          container_id: "{{hostvars[groups['tag_role_swarm_master'][0]].CID}}"
           
           
