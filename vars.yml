@@ -2,7 +2,8 @@ DB: services
 NEW_DB: ansible_services
 SUFFIX: "halo.ninja"
 REGISTRY: "hub.halo.ninja:4997"
-DB_TABLE: deploy_times
+DB_TABLE: services
+NEW_DB_TABLE: deploy_times
 USERNAME: selector
 ENV: test
 REPLICAS: 3
