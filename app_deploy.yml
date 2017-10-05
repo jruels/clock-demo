@@ -87,7 +87,7 @@
       shell: 
         cmd: |
           mysql -u "{{ USERNAME }}" "{{ DB }}" -sN \
-          -e "INSERT INTO {{ DB_TABLE }} (date,time,env,hostname,service,version,container_id) \
+          -e "INSERT INTO {{ NEW_DB_TABLE }} (date,time,env,hostname,service,version,container_id) \
           VALUES ('{{ hostvars[groups["tag_role_swarm_master"][0]].deployment_date.stdout }}', \
           '{{ hostvars[groups["tag_role_swarm_master"][0]].deployment_time.stdout }}', \
           '{{ ENV }}', '{{ HOST }}', '{{ APP_NAME }}-{{ BUILD_NUMBER }}', '{{ VERSION }}', \
