@@ -55,7 +55,7 @@
 #      msg: "docker -H tcp://{{ HOST.stdout }}.{{ SUFFIX }}:4998 rm -f {{ CID }}"
 
   - name: Create Swarm Service for {{ APP_NAME }}
-    command: "docker service create --name {{ APP_NAME }}-{{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
+    command: "docker service create --name --label traefik.port=8083 --network = traefik-net --label traefik.frontend.rule=Host:app1.haloinvesting.com {{ APP_NAME }}-{{ BUILD_NUMBER }} --replicas {{ REPLICAS }} {{ hostvars['localhost']['PARAM'] }} --restart-condition=none --log-driver=syslog -d {{ REGISTRY }}/{{ APP_NAME }}:{{ hostvars['localhost']['VERSION'] }} {{ hostvars['localhost']['COMMAND'] }} {{ hostvars['localhost']['ARGUMENTS'] }}"
   - name: Register deployment date
     shell: date -I
     register: deployment_date
